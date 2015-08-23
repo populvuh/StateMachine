@@ -34,7 +34,7 @@ namespace StateMachineTest
 		{
 			System.Diagnostics.Debug.WriteLine ("StateMachine.HandleSequenceEnd()");
 
-			_taskCompletionSource.TrySetCanceled();
+			_taskCompletionSource.TrySetResult(new SequenceResults (true));
 		}
 
 
