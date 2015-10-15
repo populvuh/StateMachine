@@ -11,19 +11,17 @@ namespace StateMachineTest
 		private NavigationPage _navigationPage;
 		private readonly TaskCompletionSource<SequenceResults> _taskCompletionSource = new TaskCompletionSource<SequenceResults>();
 
+		StateMachineData _stateMachineData = new StateMachineData ();			// shared data struct, used by all pages to pass data
+
 
 		public StateMachine (Node startNode)
 		{
 			// create a new navpage to push the state machine onto, and which then can be popped off at the end
 			_navigationPage = new NavigationPage();								
 
-			// _OkHandler is a static, to save having to pass HandleSequenceEnd into the StateMachinePage constructor
-			StateMachinePage._EndHandler += HandleSequenceEnd;
-			StateMachinePage._CancelHandler += HandleCancel;
-
 			// create the first page of the sequence
-			StateMachinePage p = PageFactory.CreatePage (startNode._pageType, _navigationPage );
-			startNode.CreatePages (p, _navigationPage);
+			StateMachinePage p = PageFactory.CreatePage (startNode.pageType, _navigationPage, _stateMachineData, HandleSequenceEnd, HandleCancel );
+			startNode.CreatePages (p, _navigationPage, _stateMachineData, HandleSequenceEnd, HandleCancel);
 
 			// start the sequence going ...
 			_navigationPage.PushAsync (p);

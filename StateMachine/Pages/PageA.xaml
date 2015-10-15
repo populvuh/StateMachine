@@ -1,7 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <StateMachinePage 	xmlns="http://xamarin.com/schemas/2014/forms" 
 					xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+					xmlns:StateMachineTest="clr-namespace:StateMachineTest;assembly=StateMachine"
 					x:Class="StateMachineTest.PageA">
+
 
 	<StateMachinePage.ToolbarItems>
 		<ToolbarItem Text="Cancel" Clicked="OnCancel"/>
@@ -11,7 +13,7 @@
 		<StackLayout VerticalOptions="StartAndExpand">
 			<Label Text=" " HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand" FontSize="Large" FontAttributes="Bold"/>
 			<Entry Text="{Binding dataA, Mode=TwoWay}" Placeholder="Enter some text ..." Keyboard="Default" HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand" />
-			<Button Text="Next" Clicked="OnNext" HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand" />
+			<Button Text="Next" Clicked="OnNext" StateMachineTest:AttachedProperties.Index="0" HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand" />
       	</StackLayout>
 	</StateMachinePage.Content>
 </StateMachinePage>

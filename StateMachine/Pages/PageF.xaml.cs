@@ -7,7 +7,8 @@ namespace StateMachineTest
 {
 	public partial class PageF : StateMachinePage
 	{
-		public PageF (NavigationPage navPage) : base(navPage)
+		public PageF (NavigationPage navPage, StateMachineData stateMachineData, EventHandler HandleSequenceEnd, EventHandler HandleCancel) : 
+			base(navPage, stateMachineData, HandleSequenceEnd, HandleCancel)
 		{
 			System.Diagnostics.Debug.WriteLine ("PageF.ctor()");
 

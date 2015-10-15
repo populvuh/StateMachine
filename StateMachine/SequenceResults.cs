@@ -4,8 +4,6 @@ namespace StateMachineTest
 {
 	public class SequenceResults
 	{
-		//public static SequenceResults CanceledResult = new SequenceResults();
-
 		public bool OK { get; private set; }
 		public bool Canceled { get; private set; }
 

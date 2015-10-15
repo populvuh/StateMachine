@@ -8,98 +8,75 @@ using Xamarin.Forms;
 
 namespace StateMachineTest
 {
-
-	public class StateMachineData : INotifyPropertyChanged
-	{
-		public event PropertyChangedEventHandler PropertyChanged = delegate {};
-
-		string _dataA;
-
-		public string dataA {
-			get
-			{ return _dataA; }
-			set {
-				if (_dataA != value) {
-					_dataA = value;
-					RaisePropertyChanged ();
-				}
-			}
-		}
-
-		string _dataB;
-
-		public string dataB {
-			get
-			{ return _dataB; }
-			set {
-				if (_dataB != value) {
-					_dataB = value;
-					RaisePropertyChanged ();
-				}
-			}
-		}
-
-		//public string dataC	{ get; set; }
-		//public string dataD	{ get; set; }
-		//public string dataE	{ get; set; }
-
-		void RaisePropertyChanged ([CallerMemberName] string propertyName = "")
-		{
-			PropertyChanged (this, new PropertyChangedEventArgs (propertyName));
-		}
-	}
-
-
+	// Base page for all pages in the sequence
 	public class StateMachinePage : ContentPage
 	{
-		public NavigationPage _navigationPage { get; set; }
-		public List<StateMachinePage> _nextPages = new List<StateMachinePage> ();
+		NavigationPage navigationPage { get; set; }
+		List<StateMachinePage> nextPages = new List<StateMachinePage> ();
 
-		static public event EventHandler _CancelHandler;
-		static public event EventHandler _EndHandler;
+		protected event EventHandler CancelHandler;
+		protected event EventHandler EndHandler;
+		protected StateMachineData _stateMachineData	{ get; set; }
 
-		static public StateMachineData _stateMachineData = new StateMachineData ();
 
 		public StateMachinePage ()
 		{
 		}
 
-		public StateMachinePage (NavigationPage navPage)
+		public StateMachinePage (NavigationPage navPage, StateMachineData stateMachineData, EventHandler HandleSequenceEnd, EventHandler HandleCancel)
 		{
-			_navigationPage = navPage;
+			navigationPage = navPage;
+			_stateMachineData = stateMachineData;
 			BindingContext = _stateMachineData;
+
+			CancelHandler += HandleCancel;
+			EndHandler += HandleSequenceEnd;
+		}
+
+		public void AddNext( StateMachinePage nextPage )
+		{
+			nextPages.Add (nextPage);
 		}
 
 		public void OnNext (object sender, EventArgs args)
 		{
 			SaveInputData ();
 
-			// use the buttons CommandParameter to pass in the index of the next page (if more than 1 button)
-			string strIdx = (null==((Button)sender).CommandParameter) ? "0" : ((Button)sender).CommandParameter.ToString();
-			int idx = Int32.Parse ((null == strIdx) ? "0" : strIdx);
-			System.Diagnostics.Debug.WriteLine ("{0}.OnNext() - NextPages.Count={1}, NextPage.idx={2} )", Title, _nextPages.Count, idx);
+			// use the buttons AttachedProperties.IndexProperty to pass in the index of the next page (if more than 1 button)
+			int idx = (int)((Button)sender).GetValue (AttachedProperties.IndexProperty);
+
+			System.Diagnostics.Debug.WriteLine ("{0}.OnNext() - NextPages.Count={1}, NextPage.idx={2} )", Title, nextPages.Count, idx);
 
 
-			// if no more pages, or next button styleid > page count, they r at the end of this branch
-			if (_nextPages.Count == 0 || _nextPages.Count <= idx || null == _navigationPage) {
+			// if no more pages, or next button index out of range, they r at the end of this branch
+			if (nextPages.Count == 0 || nextPages.Count <= idx || idx < 0 || null == navigationPage) {
 				
 				OnEndSequence (args);										// the final state, so call the end handler
 
 			} else {
 
-				StateMachinePage nextPage = _nextPages [idx];
-				if (null == nextPage) {											// aarrrgghhh, no page
-					OnEndSequence (args);										// so call the end handler rather than crash
+				// wrap the retrieval in a try/catch, just in case ...
+				StateMachinePage nextPage = null;
+				try {
+					nextPage = nextPages [idx];
+				}
+				catch (Exception ex) {
+					System.Diagnostics.Debug.WriteLine ("{0}.OnNext() - Error: idx={1}, msg={2}", Title, idx, ex.Message);
+					nextPage = null;												// so it will call the end handler rather than crash
 				}
 
-				nextPage.OnShow ();												// do anything it needs to do before displaying itself (load data etc)
-				_navigationPage.PushAsync (nextPage);							// display the page
+				if (null == nextPage) {												// aarrrgghhh, no page
+					OnEndSequence (args);											// so call the end handler rather than crash
+				} else {
+					nextPage.OnShow ();												// do anything it needs to do before displaying itself (load data etc)
+					navigationPage.PushAsync (nextPage);							// display the page
+				}
 			}
 		}
 
 		protected virtual void OnEndSequence (EventArgs e)
 		{
-			EventHandler handler = _EndHandler;
+			EventHandler handler = EndHandler;
 			if (handler != null) {
 				handler (this, e);
 			}
@@ -107,7 +84,7 @@ namespace StateMachineTest
 
 		public void OnCancel (object sender, EventArgs e) 
 		{
-			EventHandler handler = _CancelHandler;
+			EventHandler handler = CancelHandler;
 			if (handler != null) {
 				handler (this, e);
 			}
