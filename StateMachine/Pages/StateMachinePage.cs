@@ -23,7 +23,8 @@ namespace StateMachineTest
 		{
 		}
 
-		public StateMachinePage (NavigationPage navPage, StateMachineData stateMachineData, EventHandler HandleSequenceEnd, EventHandler HandleCancel)
+		public StateMachinePage (NavigationPage navPage, StateMachineData stateMachineData, 
+								 EventHandler HandleSequenceEnd, EventHandler HandleCancel)
 		{
 			navigationPage = navPage;
 			_stateMachineData = stateMachineData;

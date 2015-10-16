@@ -14,8 +14,6 @@ namespace StateMachineTest
 			System.Diagnostics.Debug.WriteLine ("PageB.ctor()");
 
 			InitializeComponent ();
-
-			Title = "Page B";
 		}
 
 		public override void OnShow() {

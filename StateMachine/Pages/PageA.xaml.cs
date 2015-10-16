@@ -12,8 +12,6 @@ namespace StateMachineTest
 		{
 			System.Diagnostics.Debug.WriteLine ("PageA.ctor()");
 			InitializeComponent ();
-
-			Title = "Page A";
 		}
 
 

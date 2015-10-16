@@ -13,8 +13,6 @@ namespace StateMachineTest
 			System.Diagnostics.Debug.WriteLine ("PageE.ctor()");
 
 			InitializeComponent ();
-
-			Title = "Page E";
 		}
 	}
 }
